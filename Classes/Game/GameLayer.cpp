@@ -22,6 +22,9 @@ bool GameLayer::init()
 		 SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Role/Girl/girlIdle.plist");
 		 SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Role/Girl/girlRun.plist");
 		 SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Role/Girl/girlAttackABC.plist");
+		 SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Role/Girl/girlSkillA.plist");
+		 SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Role/Girl/girlSkillB.plist");
+		 SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Role/Girl/girlSkillC.plist");
 		 auto map = MapLayer::create();
 		 
 		 this->addChild(map,100);

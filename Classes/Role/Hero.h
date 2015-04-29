@@ -16,6 +16,7 @@ public:
 	void onMove(Vec2 direction, float distance);
 	void onStop();
 	void onAttack(int number);
+	void onSkill(int number);
 	void updateSelf();
 };
 #endif //Hero.h

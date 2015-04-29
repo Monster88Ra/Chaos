@@ -15,26 +15,29 @@ bool Hero::init()
 	bool ret = false;
 	do
 	{
-
+		//初始化AnimationIsDone
+		setAnimationIsDone(false);
+		
 		// idle第一张图 
 		this->initWithSpriteFrameName(si_4IDLE0001);
 		//站立时播放动画
-		Animation *idleAnim = this->createNomalAnimation("4IDLE%04d.png", 24, 5);
+		Animation *idleAnim = this->createNomalAnimation("4IDLE%04d.png", 24, 20);
 		this->setIdleAction(RepeatForever::create(Animate::create(idleAnim)));
 
 		//行走
-		Animation *walkAnim = this->createNomalAnimation("4RUN%04d.png", 18, 12);
+		Animation *walkAnim = this->createNomalAnimation("4RUN%04d.png", 18, 20);
 		this->setWalkAction(RepeatForever::create(Animate::create(walkAnim)));
 
 		//普通攻击A，分出招和收招，期间夹杂攻击判定.自己可以通过调节fps控制出招速度之类的
-		Animation *attackAnima1 = this->createAttackAnimation("4ATTACK%05d.png",1,5,10);
-		Animation *attackAnima2 = this->createAttackAnimation("4ATTACK%05d.png", 5, 9, 15);
+		Animation *attackAnima1 = this->createAttackAnimation("4ATTACK%05d.png",1,5,20);
+		Animation *attackAnima2 = this->createAttackAnimation("4ATTACK%05d.png", 5, 9, 20);
 		this->setNomalAttackA(Sequence::create(
 			Animate::create(attackAnima1),
 			//CallFuncN::create(CC_CALLBACK_1(Hero::attackCallBackAction,this)),
 			Animate::create(attackAnima2),
 			Role::createIdleCallbackFunc(),
 			NULL));
+		
 
 
 		//普攻B
@@ -58,8 +61,8 @@ bool Hero::init()
 			NULL));
 
 		//普攻D
-		Animation *attackAnimd1 = this->createAttackAnimation("4ATTACK3%04d.png", 1, 6, 10);
-		Animation *attackAnimd2 = this->createAttackAnimation("4ATTACK3%04d.png", 6, 13, 15);
+		Animation *attackAnimd1 = this->createAttackAnimation("4ATTACK3%04d.png", 1, 6, 20);
+		Animation *attackAnimd2 = this->createAttackAnimation("4ATTACK3%04d.png", 6, 13, 20);
 		this->setNomalAttackD(Sequence::create(
 			Animate::create(attackAnima1),
 			Animate::create(attackAnima2),
@@ -72,21 +75,34 @@ bool Hero::init()
 			Animate::create(attackAnimd2),
 			Role::createIdleCallbackFunc(),
 			NULL));
-
-		//连续攻击
-		/*
-		this->setComboAttack(Sequence::create(
-			Animate::create(attackAnima1),
-			Animate::create(attackAnima2),
-			Animate::create(attackAnimb1),
-			Animate::create(attackAnimb2),
-			Animate::create(attackAnimc1),
-			Animate::create(attackAnimc2),
-			Animate::create(attackAnimd1),
-			Animate::create(attackAnimd2),
+		
+		//skill A
+		Animation *skillAnima1 = this->createAttackAnimation("4EFFECT1%04d.png",1,21,20);
+		Animation *skillAnima2 = this->createAttackAnimation("4EFFECT1%04d.png",21,30,20);
+		this->setSkillAttackA(Sequence::create(
+			Animate::create(skillAnima1),
+			Animate::create(skillAnima2),
 			Role::createIdleCallbackFunc(),
 			NULL));
-		*/
+
+		//skill B
+		Animation *skillAnimb1 = this->createAttackAnimation("4EFFECT2%04d.png", 1, 19, 20);
+		Animation *skillAnimb2 = this->createAttackAnimation("4EFFECT2%04d.png", 19, 27, 20);
+		this->setSkillAttackB(Sequence::create(
+			Animate::create(skillAnimb1),
+			Animate::create(skillAnimb2),
+			Role::createIdleCallbackFunc(),
+			NULL));
+
+		//skill C
+		Animation *skillAnimc1 = this->createAttackAnimation("4EFFECT4%04d.png", 1, 22, 20);
+		Animation *skillAnimc2 = this->createAttackAnimation("4EFFECT4%04d.png", 22, 32, 20);
+		this->setSkillAttackC(Sequence::create(
+			Animate::create(skillAnimc1),
+			Animate::create(skillAnimc2),
+			Role::createIdleCallbackFunc(),
+			NULL));
+
 		ret = true;
 	} while (0);
 	return ret;
@@ -110,12 +126,14 @@ void Hero::onMove(Vec2  direction, float distance)
 
 void Hero::onStop()//站立
 {
+
 	this->runIdleAction();
 	this->setVelocity(Vec2::ZERO);
 }
 
 void Hero::onAttack(int number)//执行攻击
 {
+	//设置锚点
 	//this->setAnchorPoint(Point(0.0f, 0.0f));
 	switch (number)
 	{
@@ -136,6 +154,34 @@ void Hero::onAttack(int number)//执行攻击
 		
 	}
 		
+}
+
+void Hero::onSkill(int number)
+{
+	switch (number)
+	{
+	case ACTION_STATE_SKILL_ATTACK_A:
+	{
+		this->setFlippedX(getRoleDirection());
+		this->runSkillAttackA();
+		break;
+	}
+	case ACTION_STATE_SKILL_ATTACK_B:
+	{
+		this->setFlippedX(getRoleDirection());
+		this->runSkillAttackB();
+		break;
+	}
+	case ACTION_STATE_SKILL_ATTACK_C:
+	{
+		this->setFlippedX(getRoleDirection());
+		this->runSkillAttackC();
+		break;
+	}
+			
+	default:
+		break;
+	}
 }
 
 void Hero::updateSelf()//刷新自己

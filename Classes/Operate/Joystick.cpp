@@ -31,12 +31,13 @@ bool Joystick::init()
 		m_pJoystickr = m_pJoystick->getContentSize().width / 2;
 
 		//зЂВс
+		/*
 		auto listener = EventListenerTouchAllAtOnce::create();
 		listener->onTouchesBegan = CC_CALLBACK_2(Joystick::onTouchesBegan, this);
 		listener->onTouchesMoved = CC_CALLBACK_2(Joystick::onTouchesMoved, this);
 		listener->onTouchesEnded = CC_CALLBACK_2(Joystick::onTouchesEnded, this);
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-
+		*/
 		keyboardListener = EventListenerKeyboard::create();
 		keyboardListener->onKeyPressed = CC_CALLBACK_2(Joystick::onKeyPressed, this);
 		keyboardListener->onKeyReleased = CC_CALLBACK_2(Joystick::onKeyReleased, this);
@@ -170,7 +171,7 @@ void Joystick::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 	}
 	case cocos2d::EventKeyboard::KeyCode::KEY_J:
 	{
-		keyboardListener->setEnabled(false);
+		//keyboardListener->setEnabled(false);
 		double timeInterval = pressButtonTime - prePressButtonTime;
 		CCLOG("time Interval is %f", timeInterval);
 		if (timeInterval < 200)
@@ -180,17 +181,38 @@ void Joystick::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 		}
 		else
 		{
-			keyboardListener->setEnabled(false);
+			//keyboardListener->setEnabled(false);
 			global->hero->onAttack(ACTION_STATE_NOMAL_ATTACK_A);
 		}
-		CCLOG("KEY_J release");
+		CCLOG("KEY_J release ");
 		break;
 	}
+
+	case cocos2d::EventKeyboard::KeyCode::KEY_U:
+	{
+		global->hero->onSkill(ACTION_STATE_SKILL_ATTACK_A);
+		break;
+	}
+
+	case cocos2d::EventKeyboard::KeyCode::KEY_I:
+	{
+		global->hero->onSkill(ACTION_STATE_SKILL_ATTACK_B);
+		break;
+	}
+
+	case cocos2d::EventKeyboard::KeyCode::KEY_O:
+	{
+		global->hero->onSkill(ACTION_STATE_SKILL_ATTACK_C);
+		break;
+	}
+
 	default:
+	{
 		break;
 	}
-	Sleep(120);
-	keyboardListener->setEnabled(true);
+
+	}
+	//keyboardListener->setEnabled(true);
 }
 
 void Joystick::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *unused_event)
@@ -203,18 +225,21 @@ void Joystick::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Ev
 	{
 		direction.y += roleDistance;
 		CCLOG("KEY_W press");
+		global->hero->onMove(direction.getNormalized(), roleDistance);
 		break;
 	}
 	case cocos2d::EventKeyboard::KeyCode::KEY_S:
 	{
 		direction.y -= roleDistance;
 		CCLOG("KEY_S press");
+		global->hero->onMove(direction.getNormalized(), roleDistance);
 		break;
 	}
 	case cocos2d::EventKeyboard::KeyCode::KEY_A:
 	{
 		direction.x -= roleDistance;
 		CCLOG("KEY_A press");
+		global->hero->onMove(direction.getNormalized(), roleDistance);
 		break;
 	}
 	case cocos2d::EventKeyboard::KeyCode::KEY_D:
@@ -222,11 +247,12 @@ void Joystick::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Ev
 
 		direction.x += roleDistance;
 		CCLOG("KEY_D press");
+		global->hero->onMove(direction.getNormalized(), roleDistance);
 		break;
 	}
 
 	default:
 		break;
 	}
-	global->hero->onMove(direction.getNormalized(), roleDistance);
+	
 }

@@ -1,5 +1,5 @@
 #include "Role.h"
-
+#include "Other\Global.h"
 Role::Role(void):
 	m_pidleaction(NULL),
 	m_pwalkaction(NULL),
@@ -75,7 +75,8 @@ void Role::runNomalAttackA()
 	if(changeState(ACTION_STATE_NOMAL_ATTACK_A))
 	{
 		this->setAllowMove(false);
-		setAnimationIsDone(this->runAction(m_pnomalattacka)->isDone());
+		this->runAction(m_pnomalattacka);
+
 	}
 }
 void Role::runNomalAttackB()
@@ -83,7 +84,7 @@ void Role::runNomalAttackB()
 	if(changeState(ACTION_STATE_NOMAL_ATTACK_B))
 	{
 		this->setAllowMove(false);
-		setAnimationIsDone(this->runAction(m_pnomalattackb)->isDone());
+		this->runAction(m_pnomalattackb);
 	}
 }
 
@@ -92,7 +93,7 @@ void Role::runNomalAttackC()
 	if(changeState(ACTION_STATE_NOMAL_ATTACK_C))
 	{
 		this->setAllowMove(false);
-		setAnimationIsDone(this->runAction(m_pnomalattackc)->isDone());
+		this->runAction(m_pnomalattackc);
 	}
 }
 void Role::runNomalAttackD()
@@ -100,7 +101,8 @@ void Role::runNomalAttackD()
 	if(changeState(ACTION_STATE_NOMAL_ATTACK_D))
 	{
 		this->setAllowMove(false);
-		setAnimationIsDone( this->runAction(m_pnomalattackd)->isDone() );
+		this->runAction(m_pnomalattackd);
+		
 	}
 }
 

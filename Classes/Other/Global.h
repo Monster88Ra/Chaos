@@ -29,7 +29,6 @@ public:
 	TMXTiledMap *tileMap;			//地图
 
 
-
 	Point tilePosFromLocation(Vec2 MovePoint, TMXTiledMap *map = 0);//将point转换成地图GID的point
 	bool  tileAllowMove(Vec2 MovePoint);
 };

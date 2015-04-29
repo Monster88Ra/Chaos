@@ -20,6 +20,7 @@ public:
 	void setDistance(float ds);//移动的基本单位
 	EventListenerKeyboard *keyboardListener;
 	CREATE_FUNC(Joystick);
+
 private:
 	void showJoystick();
 	void hideJoystick();
