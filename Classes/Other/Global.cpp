@@ -2,9 +2,18 @@
 
 DECLARE_SINGLETON_MEMBER(Global);
 
-Global::Global(void)
-{
 
+Global::Global(void) :sceneIndex(0)
+{
+	//获取英雄信息
+	std::map<int, HeroMessage> temp = HeroMessageUtil::getInstance()->getHeroMessageMap();
+	heroInfo = temp.at(40001);
+	//test need to be modified later
+	//init two scene info
+	auto info_1 = new GameSceneInfo(stmx_QingQiuMountain, "9", NULL);
+	sceneInfoVector.push_back(info_1);
+	auto info_2 = new GameSceneInfo("LieYanCave.tmx", NULL, "23");
+	sceneInfoVector.push_back(info_2);
 }
 
 Global::~Global(void)
@@ -14,13 +23,17 @@ Global::~Global(void)
 	CC_SAFE_DELETE(stateLayer);
 	CC_SAFE_DELETE(hero);
 	CC_SAFE_DELETE(enemies);
+	CC_SAFE_DELETE(bosses);
+	CC_SAFE_DELETE(skillA);
 	//CC_SAFE_DELETE(tileMap);
 	gameLayer = NULL;
 	operateLayer = NULL;
 	stateLayer = NULL;
 	hero = NULL;
 	enemies = NULL;
+	bosses = NULL;
 	tileMap = NULL;
+	skillA = NULL;
 }
 
 Point Global::tilePosFromLocation(Point MovePoint, TMXTiledMap *map)
@@ -53,4 +66,14 @@ bool Global::tileAllowMove(Point MovePoint)
 			return true;
 	}
 	return true;
+}
+
+float Global::getTileMapWidth()
+{
+	return tileMap->getMapSize().width * tileMap->getTileSize().width;
+}
+
+float Global::getTileMapHeight()
+{
+	return tileMap->getMapSize().height * tileMap->getTileSize().height;
 }

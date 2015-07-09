@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 USING_NS_CC;
 #include "Joystick.h"
+#include "SkillButton.h"
 class OperateLayer:public cocos2d::Layer
 {
 public:

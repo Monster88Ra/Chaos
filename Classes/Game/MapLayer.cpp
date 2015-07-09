@@ -18,8 +18,9 @@ bool MapLayer::init()
 
 	do{
 		CC_BREAK_IF(!Layer::init() );
-		m_tileMap = initMapWithFile(stmx_QingQiuMountain);
-		//m_tileMap->getLayer("Mask")->setVisible(false);
+		//m_tileMap = initMapWithFile(stmx_QingQiuMountain);
+		m_tileMap = initMapWithFile(global->sceneInfoVector[global->sceneIndex]->mapName);
+		m_tileMap->getLayer("Meta")->setVisible(false);
 		this->scheduleUpdate();
 		ret = true;
 	}while(0);

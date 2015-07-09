@@ -38,11 +38,12 @@ bool Joystick::init()
 		listener->onTouchesEnded = CC_CALLBACK_2(Joystick::onTouchesEnded, this);
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 		*/
+		
 		keyboardListener = EventListenerKeyboard::create();
 		keyboardListener->onKeyPressed = CC_CALLBACK_2(Joystick::onKeyPressed, this);
 		keyboardListener->onKeyReleased = CC_CALLBACK_2(Joystick::onKeyReleased, this);
 		this->_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
-
+		
 		ret = true;
 	} while (0);
 	return ret;
@@ -139,7 +140,19 @@ void Joystick::setDistance(float ds)
 
 void Joystick::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* unused_event)
 {
-	
+	if (global->hero->getCurrActionState() == ACTION_STATE_NOMAL_ATTACK_A ||
+		global->hero->getCurrActionState() == ACTION_STATE_NOMAL_ATTACK_B ||
+		global->hero->getCurrActionState() == ACTION_STATE_NOMAL_ATTACK_C ||
+		global->hero->getCurrActionState() == ACTION_STATE_NOMAL_ATTACK_D ||
+		global->hero->getCurrActionState() == ACTION_STATE_SKILL_ATTACK_A ||
+		global->hero->getCurrActionState() == ACTION_STATE_SKILL_ATTACK_B ||
+		global->hero->getCurrActionState() == ACTION_STATE_SKILL_ATTACK_C ||
+		global->hero->getCurrActionState() == ACTION_STATE_HURT ||
+		global->hero->getCurrActionState() == ACTION_STATE_HURT_FLY ||
+		global->hero->getCurrActionState() == ACTION_STATE_HURT_FALL ||
+		global->hero->getCurrActionState() == ACTION_STATE_UltimateSkill)
+		return;
+
 	//°´¼üÁ¬»÷ ½öwindows
 	double prePressButtonTime = pressButtonTime;
 	pressButtonTime = GetTickCount();
@@ -171,18 +184,23 @@ void Joystick::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 	}
 	case cocos2d::EventKeyboard::KeyCode::KEY_J:
 	{
-		//keyboardListener->setEnabled(false);
+
 		double timeInterval = pressButtonTime - prePressButtonTime;
 		CCLOG("time Interval is %f", timeInterval);
 		if (timeInterval < 200)
 		{
 			
+			global->hero->onAttack(ACTION_STATE_NOMAL_ATTACK_A);
+		}
+		else if (timeInterval < 700)
+		{
+			global->hero->onAttack(ACTION_STATE_NOMAL_ATTACK_C);
 			global->hero->onAttack(ACTION_STATE_NOMAL_ATTACK_D);
 		}
 		else
 		{
-			//keyboardListener->setEnabled(false);
 			global->hero->onAttack(ACTION_STATE_NOMAL_ATTACK_A);
+			global->hero->onAttack(ACTION_STATE_NOMAL_ATTACK_B);
 		}
 		CCLOG("KEY_J release ");
 		break;
@@ -190,7 +208,12 @@ void Joystick::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 
 	case cocos2d::EventKeyboard::KeyCode::KEY_U:
 	{
+		
+		if (global->hero->getCurrActionState() == ACTION_STATE_SkillA_CD)
+			break;
+		
 		global->hero->onSkill(ACTION_STATE_SKILL_ATTACK_A);
+		
 		break;
 	}
 
@@ -206,6 +229,12 @@ void Joystick::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 		break;
 	}
 
+	case cocos2d::EventKeyboard::KeyCode::KEY_SPACE:
+	{
+		global->hero->onFlash();
+		break;
+	}
+
 	default:
 	{
 		break;
@@ -217,8 +246,20 @@ void Joystick::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 
 void Joystick::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *unused_event)
 {
+	if (global->hero->getCurrActionState() == ACTION_STATE_NOMAL_ATTACK_A ||
+		global->hero->getCurrActionState() == ACTION_STATE_NOMAL_ATTACK_D ||
+		global->hero->getCurrActionState() == ACTION_STATE_SKILL_ATTACK_A ||
+		global->hero->getCurrActionState() == ACTION_STATE_SKILL_ATTACK_B ||
+		global->hero->getCurrActionState() == ACTION_STATE_SKILL_ATTACK_C ||
+		global->hero->getCurrActionState() == ACTION_STATE_HURT ||
+		global->hero->getCurrActionState() == ACTION_STATE_HURT_FLY ||
+		global->hero->getCurrActionState() == ACTION_STATE_HURT_FALL ||
+		global->hero->getCurrActionState() == ACTION_STATE_UltimateSkill)
+		return;
+
+
 	Vec2 direction(0.0f,0.0f);
-	
+
 	switch (keyCode)
 	{
 	case cocos2d::EventKeyboard::KeyCode::KEY_W:

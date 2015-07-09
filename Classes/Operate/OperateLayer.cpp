@@ -38,6 +38,9 @@ bool OperateLayer::init()
 		menu->setPosition(Vec2::ZERO);
 		this->addChild(menu, 100);
 
+		global->skillA = SkillButton::create("SkillButton.png", 3.0f);
+		global->skillA->setPosition(attackItem->getPosition() - Vec2(50, 0));
+		this->addChild(global->skillA);
 
 		ret = true;
 	}while(0);

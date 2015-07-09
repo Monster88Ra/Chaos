@@ -31,7 +31,12 @@ typedef enum
 	ACTION_STATE_SKILL_ATTACK_B,
 	ACTION_STATE_SKILL_ATTACK_C,
 	ACTION_STATE_HURT,
-	ACTION_STATE_DEAD
+	ACTION_STATE_HURT_FLY,
+	ACTION_STATE_HURT_FALL,
+	ACTION_STATE_FLASH,
+	ACTION_STATE_DEAD,
+	ACTION_STATE_UltimateSkill,
+	ACTION_STATE_SkillA_CD
 }ActionState;
 
 //base class 
@@ -50,6 +55,10 @@ public:
 	CC_SYNTHESIZE(float,sumLifevalue,SumLifeValue);	
 	//role damage strength
 	CC_SYNTHESIZE(float,damagestrength,DamageStrength);	
+	//role sum magic point
+	CC_SYNTHESIZE(float,sumMagicPoint,SumMagicPoint);
+	//role current magic point
+	CC_SYNTHESIZE(float, currMagicPoint, CurrMagicPoint);
 	//role moving speed
 	CC_SYNTHESIZE(Vec2, velocity, Velocity);
 	CC_SYNTHESIZE(bool, roleDirection, RoleDirection);		//角色朝向 true 表示左  false表示右
@@ -80,9 +89,14 @@ public:
 	CC_SYNTHESIZE_RETAIN(Action*, m_pskillattackb, SkillAttackB);	//角色技能攻击B时动画帧序列
 	CC_SYNTHESIZE_RETAIN(Action*, m_pskillattackc, SkillAttackC);	//角色技能攻击C时动画帧序列
 
-	/*主角用createImmortalAnimation创建,只有动画效果,无受伤判定,也就是受伤时候播放动画是无敌的,而且会打断所有动画,敌人就去死吧*/
-	CC_SYNTHESIZE_RETAIN(Action*, m_phurtaction, HurtAction);		//角色受伤时动画帧序列
-	CC_SYNTHESIZE_RETAIN(Action*, m_pdeadaction, DeadAction);		//角色死亡时动画帧序列
+	/*主角用createImmortalAnimation创建,只有动画效果,无受伤判定,也就是受伤时候播放动画是无敌的,而且会打断所有动画*/
+	CC_SYNTHESIZE_RETAIN(Action*, m_phurtaction, HurtAction);				//角色受伤时动画帧序列
+	CC_SYNTHESIZE_RETAIN(Action*, m_phurtFlyActionRight, HurtFlyActionRight);//角色受伤倒地动画帧序列向右
+	CC_SYNTHESIZE_RETAIN(Action*, m_phurtFlyActionLeft, HurtFlyActionLeft);	//角色受伤倒地动画帧序列向左
+	CC_SYNTHESIZE_RETAIN(Action*, m_phurtFallAction, HurtFallAction);		//角色被击落地
+	CC_SYNTHESIZE_RETAIN(Action*, m_pflashAction,FlashAction);				//角色闪烁动画
+	CC_SYNTHESIZE_RETAIN(Action*, m_pdeadaction, DeadAction);				//角色死亡时动画帧序列
+	CC_SYNTHESIZE_RETAIN(Action*, m_ultimateskill, UltimateSkillAction);    //角色大招（奥义）
 
 	void Role::callBackAction(Node* pSender);						//动画执行完毕的通用回调处理
 
@@ -105,19 +119,29 @@ public:
 	virtual void runSkillAttackB(); 							//执行技能攻击B动画
 	virtual void runSkillAttackC(); 							//执行技能攻击C动画
 	virtual void runHurtAction();								//执行被攻击后受伤动画
+	virtual void runHurtFlyRightAction();						//执行被攻击飞起后倒地受伤动画 右向
+	virtual void runHurtFlyLeftAction();						//执行被攻击飞起后倒地受伤动画 左向
+	virtual void runHurtFallAction();							//执行被攻击飞天落地动画
+	virtual void runFlashAction();								//执行闪现动画
 	virtual void runDeadAction();								//执行死亡动画等
+	virtual void runUltimateSkillAction();						//执行终极技能动画
+	virtual Spawn* createBezierAnim(Point p1, Point p2, Point p3,Animation *act);//创造一个贝塞尔曲线,p1 波谷 p2 波峰 p3 终点
 	CallFunc* createIdleCallbackFunc();							//回调闲置动画
 
-	BoundingBox createBoudingBox(Vec2 origin,Size size);
+	BoundingBox createBoundingBox(Vec2 origin,Size size);
 	CC_SYNTHESIZE(BoundingBox, m_bodyBox, BodyBox);				//身体碰撞盒子
 	CC_SYNTHESIZE(BoundingBox, m_hitBox, HitBox);				//攻击碰撞盒子
 	virtual void setPosition(const Vec2 &position);
 
 	void updateBoxes();
 
+	//debug tool draw BoundingBox
+	void Debug_DrawBoundingBox(DrawNode *p, BoundingBox b, Color4F color);
+
 protected:
 	static Animation* createNomalAnimation(const char* formatStr, int frameCount, int fps);
 	static Animation* createAttackAnimation(const char* formatStr, int frameCountBegan, int frameCountEnd,int fps);
+
 private:
 	bool changeState(ActionState actionState);
 	ActionState proActionState;

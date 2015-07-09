@@ -18,7 +18,12 @@ Role::Role(void):
 	m_pskillattackb(NULL),
 	m_pskillattackc(NULL),
 	m_phurtaction(NULL),
+	m_phurtFlyActionRight(NULL),
+	m_phurtFlyActionLeft(NULL),
+	m_phurtFallAction(NULL),
+	m_pflashAction(NULL),
 	m_pdeadaction(NULL),
+	m_ultimateskill(NULL),
 	currActionState(ACTION_STATE_NONE)
 {
 
@@ -43,7 +48,12 @@ Role::~Role()
 	CC_SAFE_RELEASE_NULL(m_pskillattackb);
 	CC_SAFE_RELEASE_NULL(m_pskillattackc);
 	CC_SAFE_RELEASE_NULL(m_phurtaction);
+	CC_SAFE_RELEASE_NULL(m_phurtFlyActionRight);
+	CC_SAFE_RELEASE_NULL(m_phurtFlyActionLeft);
+	CC_SAFE_RELEASE_NULL(m_phurtFallAction);
+	CC_SAFE_RELEASE_NULL(m_pflashAction);
 	CC_SAFE_RELEASE_NULL(m_pdeadaction);
+	CC_SAFE_RELEASE_NULL(m_ultimateskill);
 }
 
 void Role::runIdleAction()
@@ -184,11 +194,71 @@ void Role::runHurtAction()
 		this->runAction(m_phurtaction);
 	}
 }
+
+void Role::runHurtFlyRightAction()
+{
+	if (changeState(ACTION_STATE_HURT_FLY))
+	{
+		float distance = 300;
+		float delta = 32;//修正值
+		Vec2 excpPoint = Vec2(this->getPosition().x + distance + delta, this->getPosition().y);
+
+		if (excpPoint.x > 0 && excpPoint.x < global->getTileMapWidth())
+		{
+			this->runAction(m_phurtFlyActionRight);
+		}
+		else
+		{
+			this->runHurtAction();
+		}
+	}
+}
+
+void Role::runHurtFlyLeftAction()
+{
+	if (changeState(ACTION_STATE_HURT_FLY))
+	{
+		float distance = 300;
+		float delta = 32;//修正值
+		Vec2 excpPoint = Vec2(this->getPosition().x - distance-delta, this->getPosition().y);
+		if (excpPoint.x > 0 && excpPoint.x < global->getTileMapWidth())
+			this->runAction(m_phurtFlyActionLeft);
+		else
+		{
+			this->runHurtAction();
+		}
+	}
+}
+
+void Role::runHurtFallAction()
+{
+	if (changeState(ACTION_STATE_HURT_FALL))
+	{
+		this->runAction(m_phurtFallAction);
+	}
+}
+
+void Role::runFlashAction()
+{
+	if (changeState(ACTION_STATE_FLASH))
+	{
+		this->runAction(m_pflashAction);
+	}
+}
+
 void Role::runDeadAction()
 {
 	if(changeState(ACTION_STATE_DEAD))
 	{
 		this->runAction(m_pdeadaction);
+	}
+}
+
+void Role::runUltimateSkillAction()
+{
+	if (changeState(ACTION_STATE_UltimateSkill))
+	{
+		this->runAction(m_ultimateskill);
 	}
 }
 
@@ -232,14 +302,25 @@ CallFunc* Role::createIdleCallbackFunc()
 	this->setAllowMove(true);
 	return CallFunc::create(CC_CALLBACK_0(Role::runIdleAction, this));
 }
-
-BoundingBox Role::createBoudingBox(Vec2 origin, Size size)
+//创建贝塞尔曲线
+Spawn * Role::createBezierAnim(Point p1, Point p2, Point p3, Animation *act)
+{
+	//创建贝塞尔曲线
+	ccBezierConfig bezier;
+	bezier.controlPoint_1 = p1;//波谷偏向值
+	bezier.controlPoint_2 = p2;//波峰偏向值
+	bezier.endPosition = p3;//动作终点
+	BezierBy * bezierby = BezierBy::create(1.0f, bezier);
+	return  Spawn::create(bezierby, Animate::create(act), NULL);//动作同时进行
+}
+BoundingBox Role::createBoundingBox(Vec2 origin, Size size)
 {
 	//创建一个BoundingBox 用于设置碰撞检测
 	BoundingBox boundingBox;
 	boundingBox.original.origin = origin;
 	boundingBox.original.size = size;
-	boundingBox.actual.origin = this->getPosition()  + boundingBox.original.origin;
+
+	boundingBox.actual.origin = getPosition() + boundingBox.original.origin ;
 	boundingBox.actual.size= size;
 	return boundingBox;
 }
@@ -266,3 +347,17 @@ void Role::setPosition(const Vec2 &position)
 	Sprite::setPosition(position);
 	this->updateBoxes();
 }
+
+//debug tools
+void Role::Debug_DrawBoundingBox(DrawNode *p, BoundingBox box, Color4F color)
+{
+	Vec2 vertices[] =
+	{
+		Vec2(box.actual.getMinX(), box.actual.getMinY()),
+		Vec2(box.actual.getMinX(), box.actual.getMaxY()),
+		Vec2(box.actual.getMaxX(), box.actual.getMaxY()),
+		Vec2(box.actual.getMaxX(), box.actual.getMinY())
+	};
+	p->drawPolygon(vertices, 4, color, 1, Color4F(0.2f, 0.2f, 0.2f, 1));
+}
+
